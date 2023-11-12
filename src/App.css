@@ -1,38 +1,70 @@
-.App {
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body  {
+  background-color: lightgray;
+}
+
+.main--container{
+  margin: auto;
+  border: 1px solid red;
+  width: 60%;
+  height: 100vh;
+  background-color: #828282;
+}
+
+.input--container{
+  display: block;
+  text-align: center;
+  border: 1px solid green;
+}
+
+.input-field{
+  margin: 2rem auto; 
+  width: 15rem;
+  height: 2rem;
+  border-radius: 15px;
+  border-width: 1px;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+.add-btn{
+  margin-left: 1rem;
+  height: 2rem;
+  width: 5rem;
+  border: 1px solid black;
+  border-radius: 15px;
+  background-color: #1DB954;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.main--container > h1{
+  text-align: center;
+  color: white;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.list-items {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  padding: 1rem;
+  border: 1px solid orange;
+  background-color: darkgray;
+  color: white;  
+  font-size: 16px;  
+}
+
+.delete-btn{
+  background-color: red;
+  border: none;
+  color: white;
+  padding: 2px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.delete-btn:hover{
+  background-color: darkred;
 }
