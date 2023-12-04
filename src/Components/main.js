@@ -5,19 +5,56 @@ export default function Main()
 {
     const [listItems, setListItems] = React.useState([]);
     const [inputValue, setInputValue] = React.useState("");
-    const [isDragging, setIsDragging] = React.useState(false);
-    const [initialYPos, setInitialYPos] = React.useState({y: 0 });
+    const [position, setPosition] = React.useState(null);
+    const [initialDragPosition, setInitialDragPosition] = React.useState(
+        {
+            draggingSongId: null,
+            initialY: 0,
+        }
+    );
 
-    function DragStart(event)
+    function handleDragStart(songId, initialPosition)
     {
-        setInitialYPos(event.clientY);
-        isDragging(true);
+        setInitialDragPosition({
+            draggingSongId: songId,
+            initialY: initialPosition
+        })
+        setPosition(initialPosition);
+        console.log(songId);
+        console.log(initialPosition);
+        console.log(initialDragPosition);
+    }
+    
+    /*
+    function handleDragMove(event)
+    {
+        console.log("Y Position: " + event.clientY);
+
+        if(initialDragPosition.id !== null)
+        {
+            const deltaY = event.clientY - initialDragPosition.initialY;
+            console.log(deltaY);
+            setPosition(deltaY);
+        }
+    }
+    */
+
+    const updatePostion  = {
+        transform: `translate(0px, ${position}px)`
     }
 
-    function DragEnd(event)
-    {   
-        setIsDragging(false)
+    /*
+    function handleDragEnd()
+    {
+        if(initialDragPosition.id !== null)
+        {   
+            setInitialDragPosition({
+                draggingSongId: null,
+                initialY: {y: 0},
+            })
+        }
     }
+    */
 
     function handleAdd()
     {
@@ -72,9 +109,10 @@ export default function Main()
                     <Song 
                         key={song.id} 
                         songName={song.name} 
+                        id={song.id}
                         onDelete={() => handleDelete(song.id)}
-                        onmousedown={DragStart}
-                        onmouseleave={DragEnd}
+                        onDragStart={handleDragStart}
+                        css={updatePostion}
                     />
                     ))}
                 </ul>
