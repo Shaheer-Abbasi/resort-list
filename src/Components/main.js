@@ -1,122 +1,103 @@
-import React from "react"
-import Song from "./Song";
+import React, { useState, useRef } from "react";
 
-export default function Main()
-{
-    const [listItems, setListItems] = React.useState([]);
-    const [inputValue, setInputValue] = React.useState("");
-    const [position, setPosition] = React.useState(null);
-    const [initialDragPosition, setInitialDragPosition] = React.useState(
-        {
-            draggingSongId: null,
-            initialY: 0,
-        }
+export default function Main() {
+  const [listItems, setListItems] = useState([
+    {name: "song1", id: uniqueId()},
+    {name: "song2", id: uniqueId()},
+    {name: "song3", id: uniqueId()},
+    {name: "song4", id: uniqueId()},
+  ]);
+  const [inputValue, setInputValue] = useState("");
+
+  const DraggingSong = useRef(null);
+  const DraggedOverSong = useRef(null);
+
+  const Song = ({index, onDelete, songName}) => {
+    return (
+      <li
+        className="list-items"
+      >
+        {songName}
+        <button className="delete-btn" onClick={onDelete}>
+          Delete
+        </button>
+      </li>
     );
+  }
 
-    function handleDragStart(songId, initialPosition)
-    {
-        setInitialDragPosition({
-            draggingSongId: songId,
-            initialY: initialPosition
-        })
-        setPosition(initialPosition);
-        console.log(songId);
-        console.log(initialPosition);
-        console.log(initialDragPosition);
-    }
-    
-    /*
-    function handleDragMove(event)
-    {
-        console.log("Y Position: " + event.clientY);
+  function uniqueId(){
+    return '_' + Math.random().toString(36).slice(2, 9);
+  }
 
-        if(initialDragPosition.id !== null)
-        {
-            const deltaY = event.clientY - initialDragPosition.initialY;
-            console.log(deltaY);
-            setPosition(deltaY);
-        }
-    }
-    */
+  const handleSort = () => {
+    const listItemsClone = [...listItems];
+    const draggedSongContent = listItemsClone.splice(DraggingSong.current, 1)[0];
+    listItemsClone.splice(DraggedOverSong.current, 0, draggedSongContent)
+    DraggingSong.current = null;
+    DraggedOverSong.current = null;
+    setListItems(listItemsClone);
+  }
 
-    const updatePostion  = {
-        transform: `translate(0px, ${position}px)`
+  const handleAdd = () => {
+    if (inputValue.trim() !== "") {
+      const newSong = {name: inputValue, id: uniqueId()}
+      setListItems((prevList) => [...prevList, newSong]);
+      console.log(`Added song with name ${newSong.name} and id of ${newSong.id}`)
+      setInputValue("");
     }
+  };
 
-    /*
-    function handleDragEnd()
-    {
-        if(initialDragPosition.id !== null)
-        {   
-            setInitialDragPosition({
-                draggingSongId: null,
-                initialY: {y: 0},
-            })
-        }
-    }
-    */
+  const handleChange = (event) => {
+    setInputValue(event.target.value);
+  };
 
-    function handleAdd()
-    {
-        if(inputValue.trim() !== ""){
-            console.log("Adding song:", inputValue);
-            setListItems((prevList) => [...prevList, { id: uniqueId(), name: inputValue }])
-            setInputValue("");
-        }
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleAdd();
     }
-    
-    //generate unique id for each song
-    function uniqueId()
-    {
-        return '_' + Math.random().toString(36).substr(2, 9);
-    }
+  };
 
-    function handleChange(event)
-    {
-        setInputValue(event.target.value);
-    }
+  const handleDelete = (id) => {
+    setListItems((prevList) => prevList.filter((song) => song.id !== id));
+  };
 
-    function handleKeyDown(event)
-    {
-        if(event.key === 'Enter')
-        {
-            handleAdd();
-        }
-    }
-
-    function handleDelete(id)
-    {
-        setListItems((prevList) => prevList.filter((song) => song.id !== id));
-    }
-
-    return(
-        <div className="main--container">
-            <h1>My Favorite Songs!</h1>
-            <div className="input--container">
-                <input 
-                    className="input-field"
-                    name="list"
-                    type="text"
-                    onChange={handleChange}
-                    value={inputValue}
-                    onKeyDown={handleKeyDown}
-                />
-                <button className="add-btn" onClick={handleAdd}>Add</button>
+  return (
+    <div className="main--container">
+      <h1>My Favorite Songs!</h1>
+      <div className="input--container">
+        <input
+          className="input-field"
+          name="list"
+          type="text"
+          onChange={handleChange}
+          value={inputValue}
+          onKeyDown={handleKeyDown}
+        />
+        <button className="add-btn" onClick={handleAdd}>
+          Add
+        </button>
+      </div>
+      <div className="songs-container">
+        <ul>
+          {listItems.map((song, index) => (
+            <div className="draggable-element" 
+                  draggable="true"
+                  onDragStart={() => (DraggingSong.current = index)}
+                  onDragEnter={() => (DraggedOverSong.current = index)}
+                  onDragEnd={handleSort}
+                  onDragOver={(event) => event.preventDefault()}
+                  key={`Song-${index}`}
+            >
+            <Song
+              id={`_${song.name}`}
+              songName={song.name}
+              onDelete={() => handleDelete(song.id)}
+              index={index}
+            />
             </div>
-            <div>
-                <ul>
-                    {listItems.map((song) => (
-                    <Song 
-                        key={song.id} 
-                        songName={song.name} 
-                        id={song.id}
-                        onDelete={() => handleDelete(song.id)}
-                        onDragStart={handleDragStart}
-                        css={updatePostion}
-                    />
-                    ))}
-                </ul>
-            </div>
-        </div>
-    )
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
 }
